@@ -12,7 +12,9 @@ from flask import (
 )
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from flaskr.db import tp_to_dict, get_conn_db, get_db
+from flaskr.db import tp_to_dict, get_conn_db
+
+# get_db
 
 
 bp = Blueprint("auth", __name__, url_prefix="/auth")
@@ -83,11 +85,10 @@ def register():
                 "INSERT INTO author (username, password) VALUES (%s, %s)",
                 (username, generate_password_hash(password)),
             )
-
+            cur.close()
+            conn.commit()
+            conn.close()
             return redirect(url_for("auth.login"))
-        cur.close()
-        conn.commit()
-        conn.close()
 
         flash(error)
 
