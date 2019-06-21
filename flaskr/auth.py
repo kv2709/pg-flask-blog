@@ -12,7 +12,8 @@ from flask import (
 )
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from flaskr.db import get_db
+from flaskr.db import get_db, tp_to_dict, list_tp_to_list_dict, get_conn_db
+
 
 bp = Blueprint("auth", __name__, url_prefix="/auth")
 
@@ -39,9 +40,15 @@ def load_logged_in_user():
     if user_id is None:
         g.user = None
     else:
-        g.user = (
-            get_db().execute("SELECT * FROM user WHERE id = ?", (user_id,)).fetchone()
-        )
+        conn = get_conn_db()
+        cur = conn.cursor()
+
+        cur.execute("SELECT * FROM author WHERE id = %s", (user_id,))
+        auth_cur = cur.fetchone()
+        g.user = tp_to_dict(auth_cur, cur)
+        cur.close()
+        conn.commit()
+        conn.close()
 
 
 @bp.route("/register", methods=("GET", "POST"))
@@ -54,28 +61,33 @@ def register():
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
-        db = get_db()
+
+        conn = get_conn_db()
+        cur = conn.cursor()
+
         error = None
+        cur.execute("SELECT id FROM author WHERE username = %s", (username,))
+        auth_cur = cur.fetchone()
 
         if not username:
             error = "Username is required."
         elif not password:
             error = "Password is required."
-        elif (
-            db.execute("SELECT id FROM user WHERE username = ?", (username,)).fetchone()
-            is not None
-        ):
+        elif auth_cur is not None:
             error = "User {0} is already registered.".format(username)
 
         if error is None:
             # the name is available, store it in the database and go to
             # the login page
-            db.execute(
-                "INSERT INTO user (username, password) VALUES (?, ?)",
+            cur.execute(
+                "INSERT INTO author (username, password) VALUES (%s, %s)",
                 (username, generate_password_hash(password)),
             )
-            db.commit()
+
             return redirect(url_for("auth.login"))
+        cur.close()
+        conn.commit()
+        conn.close()
 
         flash(error)
 
@@ -88,11 +100,18 @@ def login():
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
-        db = get_db()
+        conn = get_conn_db()
+        cur = conn.cursor()
+
         error = None
-        user = db.execute(
-            "SELECT * FROM user WHERE username = ?", (username,)
-        ).fetchone()
+        cur.execute(
+            "SELECT * FROM author WHERE username = %s", (username,)
+        )
+        auth_cur = cur.fetchone()
+        user = tp_to_dict(auth_cur, cur)
+        cur.close()
+        conn.commit()
+        conn.close()
 
         if user is None:
             error = "Incorrect username."

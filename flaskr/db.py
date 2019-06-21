@@ -1,7 +1,6 @@
 import sqlite3
-import psycopg2
 
-
+from psycopg2 import connect
 
 # import click
 from flask import current_app, g
@@ -19,10 +18,6 @@ def get_db():
         )
         g.db.row_factory = sqlite3.Row
 
-        con = psycopg2.connect(dbname='test_bd', user='usr_bd', host='127.0.0.1', password='usr_pwd', port='5432')
-        cur = con.cursor()
-        print(g.db)
-        print(con)
     return g.db
 
 
@@ -34,6 +29,48 @@ def close_db(e=None):
 
     if db is not None:
         db.close()
+
+
+def tp_to_dict(fetch_cur_in, cursor_in):
+    """ Преобразуем полученный из базы кортежей fetch_cur_in, взяв
+        дескриптор куросра базы cursor_in в словарь, ключами которого
+        являются имена полей, а значениями - значания полей базы
+    """
+    descr = cursor_in.description
+    rec = fetch_cur_in
+    d = {}
+    enu = enumerate(descr)
+    for idx, colum in enu:
+        d[colum[0]] = rec[idx]
+    return d
+
+
+def list_tp_to_list_dict(fetch_cur_in, cursor_in):
+    """ Преобразуем полученный из базы список кортежей или
+        кортеж fetch_cur_in, взяв дескриптор куросра базы cursor_in
+        в список словарей, ключами которого являются имена полей,
+        а значениями - значания полей базы. Работает как для fetchall
+        так и для fetchone
+    """
+    descr = cursor_in.description
+    dict_lst = []
+    cur_lst_in = []
+    if type(fetch_cur_in) == tuple:
+        cur_lst_in.append(fetch_cur_in)
+    else:
+        cur_lst_in = fetch_cur_in
+    for rec in cur_lst_in:
+        d = {}
+        enu = enumerate(descr)
+        for idxt, colum in enu:
+            d[colum[0]] = rec[idxt]
+        dict_lst.append(d)
+    return dict_lst
+
+
+def get_conn_db():
+    conn = connect(dbname='test_bd', user='usr_bd', host='127.0.0.1', password='usr_pwd', port='5432')
+    return conn
 
 
 # def init_db():
