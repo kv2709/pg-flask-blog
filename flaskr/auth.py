@@ -167,6 +167,9 @@ def register():
             cur.close()
             conn.commit()
             conn.close()
+            message = "You registered as {0}. You may login and create, " \
+                      "edit and delete your post!".format(username)
+            flash(message)
             return redirect(url_for("auth.login"))
 
         flash(error)
