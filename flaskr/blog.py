@@ -3,14 +3,13 @@ from werkzeug.exceptions import abort
 
 from flaskr.auth import login_required
 
-from flaskr.db import  list_tp_to_list_dict, tp_to_dict, get_conn_db
-
-# get_db
+from flaskr.db import list_tp_to_list_dict, tp_to_dict, get_conn_db
 
 
 bp = Blueprint('blog', __name__)
 
 
+# get_db
 # @bp.route("/")
 # def index():
 #     """Show all the posts, most recent first."""

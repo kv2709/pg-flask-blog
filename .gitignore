@@ -2,5 +2,4 @@ venv/
 __pycache__/
 .idea/
 instance/
-Postgres_dev.txt
-create_bd.py
+/unused_for_pjt/

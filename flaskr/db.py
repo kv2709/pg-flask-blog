@@ -1,10 +1,10 @@
-import sqlite3
-
 from psycopg2 import connect
 
+
+# import sqlite3
 # from flask.cli import with_appcontext
 # import click
-from flask import current_app, g
+# from flask import current_app, g
 
 
 # def get_db():
@@ -30,6 +30,30 @@ from flask import current_app, g
 #     if db is not None:
 #         db.close()
 #
+
+# def init_db():
+#     """Clear existing data and create new tables."""
+#     db = get_db()
+#
+#     with current_app.open_resource("schema.sql") as f:
+#         db.executescript(f.read().decode("utf8"))
+
+
+# @click.command("init-db")
+# @with_appcontext
+# def init_db_command():
+#     """Clear existing data and create new tables."""
+#     init_db()
+#     click.echo("Initialized the database.")
+
+
+# def init_app(app):
+#     """Register database functions with the Flask app. This is called by
+#     the application factory.
+#     """
+#     app.teardown_appcontext(close_db)
+#     # app.cli.add_command(init_db_command)
+
 
 def tp_to_dict(fetch_cur_in, cursor_in):
     """ Преобразуем полученный из базы кортежей fetch_cur_in, взяв
@@ -73,25 +97,3 @@ def get_conn_db():
     return conn
 
 
-# def init_db():
-#     """Clear existing data and create new tables."""
-#     db = get_db()
-#
-#     with current_app.open_resource("schema.sql") as f:
-#         db.executescript(f.read().decode("utf8"))
-
-
-# @click.command("init-db")
-# @with_appcontext
-# def init_db_command():
-#     """Clear existing data and create new tables."""
-#     init_db()
-#     click.echo("Initialized the database.")
-
-
-# def init_app(app):
-#     """Register database functions with the Flask app. This is called by
-#     the application factory.
-#     """
-#     app.teardown_appcontext(close_db)
-#     # app.cli.add_command(init_db_command)
