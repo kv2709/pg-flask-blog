@@ -93,7 +93,15 @@ def list_tp_to_list_dict(fetch_cur_in, cursor_in):
 
 
 def get_conn_db():
-    conn = connect(dbname='test_bd', user='usr_bd', host='127.0.0.1', password='usr_pwd', port='5432')
+    db_name = 'd2rqo5613re182'
+    user_name = 'ntrfylfbzpwopk'
+    host_name = 'ec2-174-129-240-67.compute-1.amazonaws.com'
+    passwd = '8b2413c9d453644338573e79a45949c75db862fca0c10c4190e3d50f82fef780'
+    port_num = '5432'
+    conn = connect(dbname=db_name, user=user_name, host=host_name, password=passwd, port=port_num)
+
+    # conn = connect(dbname='test_bd', user='usr_bd', host='127.0.0.1', password='usr_pwd', port='5432')
+
     return conn
 
 
